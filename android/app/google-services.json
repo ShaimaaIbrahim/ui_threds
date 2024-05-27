@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "472364051535",
+    "project_id": "islates",
+    "storage_bucket": "islates.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:472364051535:android:8daa93fad465dedb274e3a",
+        "android_client_info": {
+          "package_name": "com.example.isolates"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4waefWqFz8O5nIq1miONtotsDNqWPGUs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
