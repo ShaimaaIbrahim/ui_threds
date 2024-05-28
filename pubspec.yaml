@@ -38,6 +38,12 @@ dependencies:
   firebase_messaging: ^14.7.19
   firebase_core:
   flutter_isolate: ^2.0.4
+  workmanager:
+  shared_preferences: ^2.2.3
+
+  live_activity_plugin:
+    path: live_activity_plugin
+
 
 dev_dependencies:
   flutter_test:

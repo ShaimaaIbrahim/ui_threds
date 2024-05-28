@@ -1,0 +1,8 @@
+<!-- res/drawable/circular_shape_with_stroke.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#4CAF50" /> <!-- Fill color -->
+    <corners android:radius="16dp" />  <!-- Ensure circular shape -->
+    <stroke
+        android:width="4dp"
+        android:color="#FFFFFF" /> <!-- Border color and width -->
+</shape>

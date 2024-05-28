@@ -1,54 +1,73 @@
 import 'dart:async';
-import 'dart:isolate';
-import 'dart:ui';
-import 'package:flutter/scheduler.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:live_activity_plugin/live_activity_plugin.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
 
+import 'BackgroundTask.dart';
 import 'FirebaseMessagingClass.dart';
-import 'LifeCycleEvent.dart';
 
-Future<void> runOnUiThread(Function code) async {
-  WidgetsBinding binding = WidgetsBinding.instance;
-  // if (binding.debugNeedPause) {
-  //   await Future.microtask(() => binding.debugResumeTimers());
-  // }
-  await binding.endOfFrame;
-  code();
-}
- const platform = MethodChannel('runOnUiThread_channel');
+// const platform = MethodChannel('runOnUiThread_channel');
 
-Future<void> _printBackgroundMessage() async {
-  String message;
-  try {
-    final String result = await platform.invokeMethod('runOnUiThread');
-    message = 'message is $result .';
-  } on PlatformException catch (e) {
-    message = "Failed to get message : '${e.message}'.";
-  }
-  print(message);
-}
+//
+// Future<void> _printBackgroundMessage() async {
+//   String message;
+//   debugPrint("_printBackgroundMessage called");
+//   try {
+//     final String result = await platform.invokeMethod('runOnUiThread');
+//     message = 'message is $result .';
+//     debugPrint("_printBackgroundMessage message : $message");
+//   } on PlatformException catch (e) {
+//     message = "Failed to get message : '${e.message}'.";
+//     debugPrint("_printBackgroundMessage failed : $message");
+//   }
+//   print(message);
+// }
 
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  runOnUiThread(_printBackgroundMessage);
+  try{
+    LiveActivityPlugin.startService({
+      "title": "titleeeee"
+    });
+  }catch(e){
+    debugPrint("platformChannel >>>>>>>>>> failed: ${e.toString()}");
+  }
 }
 
-void main() {
+// @pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
+// void callbackDispatcher() {
+//   Workmanager().executeTask((task, inputData) async{
+//     String message;
+//     debugPrint("_printBackgroundMessage called");
+//     try {
+//       final String result = await platform.invokeMethod('runOnUiThread');
+//       message = 'message is $result .';
+//       debugPrint("_printBackgroundMessage message : $message");
+//     } on PlatformException catch (e) {
+//       message = "Failed to get message : '${e.message}'.";
+//       debugPrint("_printBackgroundMessage failed : $message");
+//     }
+//     return Future.value(true);
+//   });
+// }
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  // Workmanager().initialize(
+  //     callbackDispatcher, // The top level function, aka callbackDispatcher
+  //     isInDebugMode: true // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+  // );
+
   FirebaseMessagingClass().inIt();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  WidgetsBinding.instance.addObserver(
-    LifeCycleEvent(
-        resumeCallBack: () async {},
-        pauseCallBack: () {},
-        detachCallBack: () {},
-        hiddenCallBack: () async{}
-    ),
-  );
 
   runApp(const MyApp());
 }
@@ -82,7 +101,13 @@ class _MyHomePageState extends State<MyHomePage> {
   final int _counter = 0;
 
   void _incrementCounter() {
+    //runOnUiThread(_printBackgroundMessage);
+  }
 
+  @override
+  void initState() {
+    super.initState();
+   _startService();
   }
 
   @override
@@ -113,4 +138,10 @@ class _MyHomePageState extends State<MyHomePage> {
       )
     );
   }
+}
+
+Future<void> _startService() async{
+  MethodChannel platformChannel = const MethodChannel('runOnUiThread_channel');
+  WidgetsFlutterBinding.ensureInitialized();
+  var result = await platformChannel.invokeMethod('startService');
 }
